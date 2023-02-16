@@ -34,7 +34,11 @@ I've created this repo for two reasons:
 ## How to use it
 
 ```
-docker run -it --privileged cruizba/ubuntu-dind
+#host
+docker run --rm -it --privileged -p 80:8080 ubuntu-dind
+
+#container
+docker run -it --rm -d -p 8080:80 --name web nginx 
 ```
 
 This will run a bash with a complete docker separated from your host to build, run and push docker images.
