@@ -6,8 +6,10 @@ RUN apt update \
     && rm -rf /var/lib/apt/list/*
 
 ENV DOCKER_CHANNEL=stable \
-	DOCKER_VERSION=20.10.22 \
-	DOCKER_COMPOSE_VERSION=1.29.2 \
+	#DOCKER_VERSION=20.10.22 \
+	#DOCKER_COMPOSE_VERSION=1.29.2 \
+	DOCKER_VERSION=23.0.0 \
+	DOCKER_COMPOSE_VERSION=2.16.0 \
 	DEBUG=false
 
 # Docker installation
@@ -49,8 +51,13 @@ RUN chmod +x /usr/local/bin/startup.sh /usr/local/bin/modprobe
 VOLUME /var/lib/docker
 
 # Docker compose installation
-RUN curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+RUN curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
 	&& chmod +x /usr/local/bin/docker-compose && docker-compose version
+
+#adding nonroot user
+RUN adduser nonroot && \
+	groupadd docker && \
+	usermod -aG docker nonroot
 
 ENTRYPOINT ["startup.sh"]
 CMD ["bash"]
