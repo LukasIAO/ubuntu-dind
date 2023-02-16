@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:20.04 AS base
 
 RUN apt update \
     && apt install -y ca-certificates openssh-client \
@@ -58,6 +58,14 @@ RUN curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPO
 RUN adduser nonroot && \
 	groupadd docker && \
 	usermod -aG docker nonroot
+
+FROM base AS ddev
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt update && apt-get -y install gpg && \
+	curl -fsSL https://apt.fury.io/drud/gpg.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/ddev.gpg > /dev/null && \
+	echo "deb [signed-by=/etc/apt/trusted.gpg.d/ddev.gpg] https://apt.fury.io/drud/ * *" | tee /etc/apt/sources.list.d/ddev.list && \
+	apt update && apt install -y ddev
 
 ENTRYPOINT ["startup.sh"]
 CMD ["bash"]
